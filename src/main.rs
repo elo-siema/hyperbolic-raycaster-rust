@@ -2,14 +2,14 @@ extern crate sdl2;
 
 mod emscripten;
 mod game;
-mod renderer;
+mod hyperbolic_renderer;
 mod utils;
 mod window;
 
 use game::Game;
 use game::map::Map;
 use game::player::Player;
-use renderer::Renderer;
+use hyperbolic_renderer::Renderer;
 use std::process::exit;
 use std::time::Duration;
 use utils::geometry::Point;
