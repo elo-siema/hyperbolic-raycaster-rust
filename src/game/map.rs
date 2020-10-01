@@ -1,20 +1,94 @@
-use utils::color::RGBColor;
-use utils::geometry::Angle;
-use utils::geometry::Axis;
-use utils::geometry::Direction;
-use utils::geometry::Point;
+
+use crate::utils::color::RGBColor;
+use crate::utils::geometry::Angle;
+use crate::utils::geometry::Axis;
+use crate::utils::geometry::Direction;
+use crate::utils::geometry::Point;
+use serde::Deserialize; 
 
 /// Represents the map of the 3D maze.
 pub struct Map {
 	/// The tiles of the map
-	tiles: Vec<Vec<Tile>>,
+	tiles: Vec<Tile>,
 
 	/// The longest distance between two points within the map
 	max_distance: usize
 }
 
+/*pub struct Neighbors {
+	
+}*/
+
+pub enum Direction5 {
+	BACK,
+	BACK_LEFT,
+	FRONT_LEFT,
+	FRONT_RIGHT,
+	BACK_RIGHT
+}
+
+
+pub struct CircularIterator<'a, T> {
+	vec: &'a Vec<T>,
+	offset: usize,
+	current_count: usize
+}
+
+impl<T> Iterator for CircularIterator<'_, T> 
+	where T: Copy {
+	type Item = T;
+
+	
+	///	Will return vec.size elements starting from offset
+	fn next(&mut self) -> Option<Self::Item> {
+		let result;
+        if self.current_count >= self.vec.len() {
+			result = None;
+		} else {
+			result = Some(self.vec[self.current_count % self.vec.len()]);
+		}
+
+		self.current_count += 1;
+
+		result
+    }
+}
+#[derive(Deserialize, Debug)]
+pub struct Tile {
+	neighbors: Vec<Option<usize>>,
+	content: i32
+}
+
+impl Tile {
+	pub fn iter(&self) -> CircularIterator<Option<usize>>{
+		CircularIterator {
+			vec: &self.neighbors,
+			offset: 0,
+			current_count: 0
+		}
+	}
+
+	pub fn iter_from(&self, offset: usize) -> CircularIterator<Option<usize>>{
+		CircularIterator {
+			vec: &self.neighbors,
+			offset: offset,
+			current_count: 0
+		}
+	}
+
+	pub fn get_color(&self) -> TileContent {
+		match self.content {
+			1 => TileContent::Wall(RGBColor::red()),
+			2 => TileContent::Wall(RGBColor::green()),
+			3 => TileContent::Wall(RGBColor::blue()),
+			4 => TileContent::Wall(RGBColor::yellow()),
+			_ => TileContent::Empty
+		}
+	}
+}
+
 #[derive(PartialEq, Eq, Clone)]
-pub enum Tile {
+pub enum TileContent {
 	Empty,
 	Wall(RGBColor)
 }
@@ -27,24 +101,14 @@ impl Map {
 	///						Use the characters R,G,B,Y,O to designate a wall with a certain color. Use spaces to designate empty tiles. Do not use tabs.
 	pub fn new(map_string: &str) -> Map {
 		// Go through the map line by line and create either tiles with a certain color or empty tiles.
-		let tiles: Vec<Vec<Tile>> = map_string.lines().map({|line|
-			line.chars().map ({|field|
-				match field {
-					' ' =>	Tile::Empty,
-					'R' =>	Tile::Wall(RGBColor::red()),
-					'G' =>	Tile::Wall(RGBColor::green()),
-					'B' =>	Tile::Wall(RGBColor::blue()),
-					'Y' =>	Tile::Wall(RGBColor::yellow()),
-					'O' =>	Tile::Wall(RGBColor::orange()),
-					_   =>	Tile::Wall(RGBColor::red())
-				}
-			}).collect()
-		}).collect();
+		let tiles: Vec<Tile> = serde_json::from_str(map_string).unwrap();
 
 		// Since our map is rectangular the longest possible distance can be never longer than the sum of the height or width (https://en.wikipedia.org/wiki/Triangle_inequality).
-		let height = tiles.len();
-		let width = tiles.iter().fold(0, {|max_count, line| line.len().max(max_count)});
-		let max_distance = height + width;
+		//let height = tiles.len();
+		//let width = tiles.iter().fold(0, {|max_count, line| line.len().max(max_count)});
+		//let max_distance = height + width;
+		//we've stopped thinking in those terms
+		let max_distance = 5;
 
 		Map {tiles, max_distance}
 	}
@@ -53,8 +117,8 @@ impl Map {
 	///
 	/// # Parameters
 	/// 	- `point`:	The position of the tile. If the position is outside the map, an empty field is returned.
-	pub fn tile(&self, position: &TilePosition) -> Tile {
-		if position.y < 0 || position.y as usize >= self.tiles.len() {
+	pub fn tile(&self, position: &TilePosition) -> Option<Tile> {
+		/*if position.y < 0 || position.y as usize >= self.tiles.len() {
 			return Tile::Empty;
 		}
 
@@ -63,7 +127,8 @@ impl Map {
 			return Tile::Empty;
 		}
 
-		return line[position.x as usize].clone();
+		return line[position.x as usize].clone();*/
+		None
 	}
 
 	/// The longest distance between two points that can exist within the map

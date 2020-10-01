@@ -1,10 +1,10 @@
 pub mod map;
 pub mod player;
 
-use game::map::Tile;
-use game::map::TilePosition;
-use game::map::Map;
-use game::player::Player;
+use crate::game::map::Tile;
+use crate::game::map::TilePosition;
+use crate::game::map::Map;
+use crate::game::player::Player;
 
 /// Represents the state of our game's virtual world
 pub struct Game {
@@ -39,8 +39,12 @@ impl Game {
 		let new_position = self.player.position.add(distance, self.player.direction);
 
 		match self.map.tile(&TilePosition::new(&new_position, &self.player.direction)) {
-			Tile::Empty => {self.player.position = new_position},
-			Tile::Wall(_) => {}
+			None => {self.player.position = new_position},
+			
+			Some(tile) => match tile.get_color() {
+				map::TileContent::Empty => {self.player.position = new_position},
+				map::TileContent::Wall(_) => ()
+			}
 		}
 	}
 }

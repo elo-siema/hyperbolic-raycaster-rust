@@ -4,8 +4,8 @@ pub mod event;
 pub mod view;
 pub mod canvas;
 
-use window::view::View;
-use window::event::EventSource;
+use crate::window::view::View;
+use crate::window::event::EventSource;
 
 /// A window that can be used for drawing and that provides user events. May be a window or a HTML canvas.
 pub struct Window {

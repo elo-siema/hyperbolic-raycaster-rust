@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-use utils::color::RGBColor;
+use crate::utils::color::RGBColor;
 
 /// A buffer for pixel drawing.
 pub struct Canvas<'a> {

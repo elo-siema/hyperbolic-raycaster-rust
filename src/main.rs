@@ -23,10 +23,10 @@ fn main() {
 
 	// Load the game and place the player within the map.
 	let game = Game::new(
-		Map::new(include_str!("../assets/map.txt")),
+		Map::new(include_str!("../assets/map.json")),
 		Player {position: Point {x: 4.5, y: 5.5}, direction: 0.0}
 	);
-
+	/*
 	// Initialize the renderer
 	let mut renderer = Renderer::new(game, 1.0, 0.75, 100.0, 0.25);
 
@@ -47,7 +47,8 @@ fn main() {
 	    	main_loop(&mut window, &mut renderer, &initial_run);
 	    	initial_run = false;
 	    });
-	}    
+	}    */
+	println!("{}", game.map.max_distance())
 }
 
 /// The main event handling loop.

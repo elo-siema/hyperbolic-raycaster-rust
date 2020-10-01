@@ -1,7 +1,7 @@
-use utils::geometry::Angle;
-use utils::geometry::Axis;
-use utils::geometry::Direction;
-use utils::geometry::Point;
+use crate::utils::geometry::Angle;
+use crate::utils::geometry::Axis;
+use crate::utils::geometry::Direction;
+use crate::utils::geometry::Point;
 
 /// Describes a Ray that move through a map
 pub struct Ray {

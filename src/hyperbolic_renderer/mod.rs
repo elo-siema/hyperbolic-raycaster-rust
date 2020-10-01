@@ -1,13 +1,13 @@
 mod ray;
 
-use game::Game;
-use game::map::Tile;
-use game::map::TilePosition;
-use game::map::Map;
-use hyperbolic_renderer::ray::Ray;
-use utils::color::RGBColor;
-use utils::geometry::Angle;
-use window::canvas::Canvas;
+use crate::game::Game;
+use crate::game::map::Tile;
+use crate::game::map::TilePosition;
+use crate::game::map::Map;
+use crate::hyperbolic_renderer::ray::Ray;
+use crate::utils::color::RGBColor;
+use crate::utils::geometry::Angle;
+use crate::window::canvas::Canvas;
 
 /// Draws a 3D scene for a given map and a player within the map.
 pub struct Renderer {
@@ -94,12 +94,8 @@ impl Renderer {
 			ray = ray.grow();
 
 			let tile = self.game.map.tile(&TilePosition::new(&ray.end, &ray.angle));
-			match tile {
-				Tile::Empty => {
-					// We've found nothing. Just continue scanning.
-				},
-
-				Tile::Wall(color) => {
+			match tile.unwrap().get_color() { // TODO
+				crate::game::map::TileContent::Wall(color) => {
 					// Fix the calculated distance to correct the fisheye effect
 					let projected_distance = ray.length * relative_angle.cos();	
 						
@@ -110,7 +106,10 @@ impl Renderer {
 
 					// Pass the result
 					return Hit::Wall {color: illuminated_color, distance: projected_distance}
-				}
+				},
+				
+
+			    crate::game::map::TileContent::Empty => {}
 			}
 		}	
 

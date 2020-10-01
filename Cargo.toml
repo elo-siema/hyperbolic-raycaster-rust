@@ -2,6 +2,11 @@
 name = "raycaster"
 version = "0.1.0"
 authors = ["Friedrich Ruynat <friedrich@hydrixos.net>"]
+edition = "2018"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 [dependencies.sdl2]
 version = "0.31.0"

@@ -7,39 +7,39 @@ let states = {
     red: 1,
     green: 2,
     blue: 3,
-    cyan: 4
+    yellow: 4
 }
 
 //neighbors: clockwise, color: 0 - empty, >0 - rgb
 //let tile = {neighbors: [1,2,3,4,5], state: 0}
 
-map[0] = {neighbors: [1,2,3,4,5],      state: 0}
-map[1] = {neighbors: [0,6,7,8,9],      state: 0}
-map[2] = {neighbors: [0,9,10,11,12],   state: states.red}
-map[3] = {neighbors: [0,12,13,14,15],  state: states.green}
-map[4] = {neighbors: [0,15,16,17,18],  state: states.blue}
-map[5] = {neighbors: [0,18,19,20,6],   state: states.cyan}
+map[0] = {neighbors: [1,2,3,4,5],      content: 0}
+map[1] = {neighbors: [0,6,7,8,9],      content: 0}
+map[2] = {neighbors: [0,9,10,11,12],   content: states.red}
+map[3] = {neighbors: [0,12,13,14,15],  content: states.green}
+map[4] = {neighbors: [0,15,16,17,18],  content: states.blue}
+map[5] = {neighbors: [0,18,19,20,6],   content: states.cyan}
 
-map[6] = {neighbors: [1,5,-1,-1,-1],   state: 0}
+map[6] = {neighbors: [1,5,-1,-1,-1],   content: 0}
 
-map[7] = {neighbors: [1,-1,-1,-1,-1],  state: 0}
-map[8] = {neighbors: [1,-1,-1,-1,-1],  state: 0}
-map[9] = {neighbors: [2,1,-1,-1,-1],   state: 0}
+map[7] = {neighbors: [1,-1,-1,-1,-1],  content: 0}
+map[8] = {neighbors: [1,-1,-1,-1,-1],  content: 0}
+map[9] = {neighbors: [2,1,-1,-1,-1],   content: 0}
 
-map[10] = {neighbors: [2,-1,-1,-1,-1], state: 0}
-map[11] = {neighbors: [2,-1,-1,-1,-1], state: 0}
-map[12] = {neighbors: [3,2,-1,-1,-1],  state: 0}
+map[10] = {neighbors: [2,-1,-1,-1,-1], content: 0}
+map[11] = {neighbors: [2,-1,-1,-1,-1], content: 0}
+map[12] = {neighbors: [3,2,-1,-1,-1],  content: 0}
 
-map[13] = {neighbors: [3,-1,-1,-1,-1], state: 0}
-map[14] = {neighbors: [3,-1,-1,-1,-1], state: 0}
-map[15] = {neighbors: [4,3,-1,-1,-1],  state: 0}
+map[13] = {neighbors: [3,-1,-1,-1,-1], content: 0}
+map[14] = {neighbors: [3,-1,-1,-1,-1], content: 0}
+map[15] = {neighbors: [4,3,-1,-1,-1],  content: 0}
 
-map[16] = {neighbors: [4,-1,-1,-1,-1], state: 0}
-map[17] = {neighbors: [4,-1,-1,-1,-1], state: 0}
-map[18] = {neighbors: [5,4,-1,-1,-1],  state: 0}
+map[16] = {neighbors: [4,-1,-1,-1,-1], content: 0}
+map[17] = {neighbors: [4,-1,-1,-1,-1], content: 0}
+map[18] = {neighbors: [5,4,-1,-1,-1],  content: 0}
 
-map[19] = {neighbors: [5,-1,-1,-1,-1], state: 0}
-map[20] = {neighbors: [5,-1,-1,-1,-1], state: 0}
+map[19] = {neighbors: [5,-1,-1,-1,-1], content: 0}
+map[20] = {neighbors: [5,-1,-1,-1,-1], content: 0}
 
 const jsonContent = JSON.stringify(map); 
 

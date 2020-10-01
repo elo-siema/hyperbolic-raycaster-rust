@@ -1,5 +1,5 @@
-use utils::geometry::Angle;
-use utils::geometry::Point;
+use crate::utils::geometry::Angle;
+use crate::utils::geometry::Point;
 
 /// Represents a player inside the map.
 pub struct Player {
