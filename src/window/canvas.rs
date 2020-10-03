@@ -33,4 +33,14 @@ impl<'a> Canvas<'a> {
 		self.buffer[offset + 1] = color.green;
         self.buffer[offset + 2] = color.blue;
 	}
+
+	/// Draws a pixel at the given coordinates.
+	pub fn draw_pixel_big(&mut self, x: usize, y: usize, color: &RGBColor) {
+		self.draw_pixel(x, y, &color);
+		self.draw_pixel(x-1, y, &color);
+		self.draw_pixel(x, y-1, &color);
+		self.draw_pixel(x+1, y, &color);
+		self.draw_pixel(x, y+1, &color);
+		
+	}
 }

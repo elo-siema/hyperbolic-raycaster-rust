@@ -1,13 +1,12 @@
-/*mod ray;
+mod ray;
 
-use crate::game::Game;
-use crate::game::map::Tile;
-use crate::game::map::TilePosition;
-use crate::game::map::Map;
-use crate::hyperbolic_renderer::ray::Ray;
+use crate::{game::Game, utils::poncairepoint::PoncairePoint, utils::poncairepoint::PoncaireWall};
+use crate::game::hypermap::Map;
+use crate::poncaire_renderer::ray::Ray;
 use crate::utils::color::RGBColor;
 use crate::utils::geometry::Angle;
 use crate::window::canvas::Canvas;
+use line_drawing::Bresenham;
 
 /// Draws a 3D scene for a given map and a player within the map.
 pub struct Renderer {
@@ -46,23 +45,57 @@ impl Renderer {
 	/// # Parameters:
 	///		- canvas		The canvas that should be drawn to.
 	pub fn render(&self, canvas: &mut Canvas) {
-		for column in 0..canvas.width() {
-			self.render_column(column, canvas);
+		let helper : PoncairePoint =  self.game.map.walls[0].beginning.clone().into();
+		//println!("{:?}", helper);
+		//for a in self.game.map
+
+		let poncaireWalls: Vec<PoncaireWall> = self.game.map.walls.iter().map(|w| w.clone().into()).collect();
+		poncaireWalls.iter().for_each(|wall| {
+			/*self.draw_point_of_a_disc(
+				wall.beginning.0[0], 
+				wall.beginning.0[1], 
+				&wall.color, 
+				canvas);
+			self.draw_point_of_a_disc(
+				wall.end.0[0], 
+				wall.end.0[1], 
+				&wall.color, 
+				canvas);*/
+			self.draw_wall(&wall, canvas);
+		});
+	}
+
+	fn draw_wall(&self, wall: &PoncaireWall, canvas: &mut Canvas){
+		let start = self.translate_to_canvas_coords(wall.beginning.0[0],wall.beginning.0[1], canvas);
+		let end = self.translate_to_canvas_coords(wall.end.0[0],wall.end.0[1], canvas);
+
+		for(x, y) in Bresenham::new(start, end) {
+			canvas.draw_pixel(x as usize, y as usize, &wall.color);
 		}
+		
 	}
 
-	/// Renders one pixel column of a frame into a canvas.
-	///
-	/// # Parameters:
-	///		- column:		The pixel column of the canvas that should be rendered
-	///		- canvas:		The canvas that should be drawn to.
-	fn render_column(&self, column: usize, canvas: &mut Canvas) {
-		// Cast the ray to find a nearby wall
-		let scanning_result = self.cast_ray(column, canvas.width());
+	///expects x and y between -1:1
+	fn draw_point_of_a_disc(&self, x: f64, y: f64, color: &RGBColor, canvas: &mut Canvas) {
 
-		// Draw scanning result to the canvas
-		self.draw_hit(scanning_result, column, canvas);
+		//map poncaire coords to screen coords
+		/*
+		let slope: f64 = 1.0 * (window_height as f64 - 0.0) / (-1.0 - 1.0);
+		let outputX = (0.0 + slope * (x - (-1.0))) as usize + left_pad;
+		let outputY = (slope * (y - (-1.0))) as usize;*/
+		let (outputX, outputY) = self.translate_to_canvas_coords(x, y, canvas);
+		canvas.draw_pixel_big(outputX as usize, outputY as usize, &color);
 	}
+
+	fn translate_to_canvas_coords(&self, x: f64, y: f64, canvas: &Canvas) -> (i32, i32) {
+		
+		let window_height = canvas.height(); 
+		let window_width = canvas.width();
+		let left_pad = (window_width - window_height) / 2;
+
+		((((x+1.0)*250.0) as i32 +150),(((y+1.0)*250.0) as i32+30))
+	}
+
 }
 
 /// Describes the result of a casted ray
@@ -76,12 +109,12 @@ enum Hit {
 
 // Methods related to ray casting
 impl Renderer {
-	/// Casts a ray from the player's position for a given column on the view and returns what the ray scanned at its end.
-	///
-	/// # Parameters:
-	///		- column:			The column that should be drawn
-	///		- width:			The largest column number that could be drawn
-	fn cast_ray(&self, column: usize, max_column: usize) -> Hit {
+	// Casts a ray from the player's position for a given column on the view and returns what the ray scanned at its end.
+	//
+	// # Parameters:
+	//		- column:			The column that should be drawn
+	//		- width:			The largest column number that could be drawn
+	/*fn cast_ray(&self, column: usize, max_column: usize) -> Hit {
 		// Determine the absolute angle of the ray
 		let relative_angle = self.ray_angle(column, max_column);
 		let absolute_angle = relative_angle + self.game.player.direction;
@@ -92,7 +125,7 @@ impl Renderer {
 		// Grow the ray stepy by step. Grow it until we either hit a wall or reached the maximal possible distance inside our map
 		while ray.length <= self.game.map.max_distance() as f64 {
 			ray = ray.grow();
-
+			/*
 			let tile = self.game.map.tile(&TilePosition::new(&ray.end, &ray.angle));
 			match tile.unwrap().get_color() { // TODO
 				crate::game::map::TileContent::Wall(color) => {
@@ -109,12 +142,12 @@ impl Renderer {
 				},
 				
 
-			    crate::game::map::TileContent::Empty => {}
+			    crate::game::map::TileContent::Empty => {}*/
 			}
 		}	
 
 		// The ray casting reached the outer bounds of our map. We never hit a wall...
-		return Hit::None;
+		//return Hit::None;
 	}
 
 	/// Determines the angle of a scanning ray for drawing the given column on a view with the given width.
@@ -127,10 +160,11 @@ impl Renderer {
 		let relative_position = ((column as f64) / (max_column as f64)) - 0.5;
 		let virtual_screen_position = relative_position * self.relative_screen_size;
 		return (virtual_screen_position / self.focal_length).atan();
-	}
+	}*/
 }
 
 // Methods related to drawing
+/*
 impl Renderer {
 	/// Draws the given view column for the result of a particular ray casting operation to a given canvas
 	fn draw_hit(&self, hit: Hit, column: usize, canvas: &mut Canvas) {
@@ -180,5 +214,4 @@ impl Renderer {
 			canvas.draw_pixel(column as usize, y as usize, &gradient_color);
 		}
 	}
-}
-*/
+}*/

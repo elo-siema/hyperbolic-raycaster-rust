@@ -2,17 +2,18 @@ extern crate sdl2;
 
 mod emscripten;
 mod game;
-mod hyperbolic_renderer;
+mod poncaire_renderer;
 mod utils;
 mod window;
 
 use game::Game;
-use game::map::Map;
+use game::hypermap::Map;
 use game::player::Player;
-use hyperbolic_renderer::Renderer;
+use poncaire_renderer::Renderer;
 use std::process::exit;
 use std::time::Duration;
 use utils::geometry::Point;
+use utils::hyperpoint::Hyperpoint;
 use window::Window;
 use window::event::Event;
 use window::event::Keycode;
@@ -23,10 +24,9 @@ fn main() {
 
 	// Load the game and place the player within the map.
 	let game = Game::new(
-		Map::new(include_str!("../assets/map.json")),
-		Player {position: Point {x: 4.5, y: 5.5}, direction: 0.0}
+		Map::new(include_str!("../assets/poncairemap.json"))
 	);
-	/*
+	
 	// Initialize the renderer
 	let mut renderer = Renderer::new(game, 1.0, 0.75, 100.0, 0.25);
 
@@ -47,8 +47,8 @@ fn main() {
 	    	main_loop(&mut window, &mut renderer, &initial_run);
 	    	initial_run = false;
 	    });
-	}    */
-	println!("{}", game.map.max_distance())
+	}    
+	//println!("{}", game.map.max_distance())
 }
 
 /// The main event handling loop.

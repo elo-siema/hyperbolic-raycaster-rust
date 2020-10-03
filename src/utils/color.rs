@@ -1,5 +1,6 @@
+use serde::Deserialize;
 /// Represents a RGB color
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Deserialize)]
 pub struct RGBColor {
 	/// The red component of a color
 	pub red: u8,
