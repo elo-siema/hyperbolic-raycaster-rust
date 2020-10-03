@@ -2,7 +2,6 @@ use crate::utils::poncairepoint;
 use nalgebra::*;
 use poncairepoint::{PoncairePoint, PoncaireWall};
 use serde::Deserialize;
-
 use super::color::RGBColor;
 #[derive(Clone, Debug, Deserialize)]
 pub struct Hyperpoint(pub Point3<f64>);
@@ -39,17 +38,35 @@ impl Hyperpoint {
     }
 
     pub fn rotate(&mut self, angle: f64) {
+        
         let rot = Rotation3::from_axis_angle(
             &Unit::new_normalize(Vector3::<f64>::new(0.0, 0.0, 1.0)),
             angle,
         );
         self.0 = rot.transform_point(&self.0);
     }
+    
 
     pub fn translate(&mut self, x: f64, y: f64) {
-        self.0[0] += x;
-        self.0[1] += y;
-        self.0[2] = (1.0 + (self.0[0]).powi(2) + (self.0[1]).powi(2)).sqrt(); //ensure it stays on the hyperboloid
+        
+        //https://math.stackexchange.com/questions/1862340/what-are-the-hyperbolic-rotation-matrices-in-3-and-4-dimensions?newreg=0a895728ef9c48ad814e2f06eafb3862
+        let coshb = f64::cosh(x);
+        let sinhb = f64::sinh(x);
+        let coshy = f64::cosh(-y);
+        let sinhy = f64::sinh(-y);
+        let translation1 = Matrix3::new(
+            coshb, 0., sinhb,
+            0., 1., 0.,
+            sinhb, 0., coshb
+        );
+        let translation2 = Matrix3::new(
+            1., 0., 0.,
+            0., coshy, sinhy,
+            0., sinhy, coshy
+        ); // true form
+
+        let translation = translation1 * translation2;
+        self.0 = translation * &self.0;
     }
 }
 

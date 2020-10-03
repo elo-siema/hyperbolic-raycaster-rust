@@ -68,8 +68,8 @@ fn main_loop(window: &mut Window, renderer: &mut Renderer, initial_run: &bool) {
     // Handle key presses
     for keycode in window.event_source.pressed_keycodes() {
         needs_refresh = true;
-        let movement_speed = 0.2;
-        let rotation_speed = 0.05;
+        let movement_speed = 0.02;
+        let rotation_speed = 0.02;
 
         match keycode {
             // Arrow up/down: Move player forward/backwards
