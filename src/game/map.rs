@@ -1,3 +1,9 @@
+/*use crate::utils::point::Wall;
+
+pub trait Map {
+	fn get_iterator(&self) -> Box<dyn Iterator<Item=&Wall>>;
+}
+
 
 use crate::utils::color::RGBColor;
 use crate::utils::geometry::Angle;
@@ -204,3 +210,4 @@ impl TilePosition {
 		point_component as isize
 	}
 }
+*/

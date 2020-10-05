@@ -2,14 +2,14 @@ extern crate sdl2;
 
 mod emscripten;
 mod game;
-mod poncaire_renderer;
+mod hyperbolic_renderer;
 mod utils;
 mod window;
 
 use game::hypermap::Map;
 use game::player::Player;
 use game::Game;
-use poncaire_renderer::Renderer;
+use hyperbolic_renderer::Renderer;
 use std::process::exit;
 use std::time::Duration;
 use utils::geometry::Point;
@@ -22,8 +22,9 @@ fn main() {
     // Initialize the graphics and event handling.
     let mut window = Window::new();
 
+    let map = Map::new(include_str!("../assets/poncairemap2.json"));
     // Load the game and place the player within the map.
-    let game = Game::new(Map::new(include_str!("../assets/poncairemap.json")));
+    let game = Game::new(map);
 
     // Initialize the renderer
     let mut renderer = Renderer::new(game, 1.0, 0.75, 100.0, 0.25);

@@ -2,53 +2,61 @@ use crate::utils::geometry::Angle;
 use crate::utils::geometry::Axis;
 use crate::utils::geometry::Direction;
 use crate::utils::geometry::Point;
-use crate::utils::{color::RGBColor, hyperpoint::HyperWall, poncairepoint::PoncaireWall};
-use serde::Deserialize;
-use std::f64::*;
+use crate::utils::{color::RGBColor, hyperpoint::HyperWall, poncairepoint::PoncaireWall, point::*};
+use std::{collections::BTreeSet, f64::*};
+
+//use super::map::Map;
 
 /// Represents the map of the 3D maze.
-pub struct Map {
-    /// The tiles of the map
-    pub walls: Vec<HyperWall>,
+pub struct HyperMap {
+    /// The tiles of the map, sorted by distance to origin.
+    walls: Vec<HyperWall>,
 }
-impl Map {
+
+pub struct WallIterator {
+
+}
+
+
+impl HyperMap {
     /// Creates a new map from the given string.
     ///
     /// # Parameters
     ///    - `map_string`:	A string representation of the map, whereas each line represents one row of the map and each character of a line represents a tile of a row.
     ///						Use the characters R,G,B,Y,O to designate a wall with a certain color. Use spaces to designate empty tiles. Do not use tabs.
-    pub fn new(map_string: &str) -> Map {
+    pub fn new(map_string: &str) -> HyperMap {
         // Go through the map line by line and create either tiles with a certain color or empty tiles.
         let walls: Vec<PoncaireWall> = serde_json::from_str(map_string).unwrap();
-        let transformedWalls: Vec<HyperWall> = walls.into_iter().map(|w| w.into()).collect();
+        /*let mut transformedWalls: BTreeSet<HyperWall> = BTreeSet::<HyperWall>::new();
+        for wall in walls {
+            let transformed : HyperWall= wall.into();
+            transformedWalls.insert(transformed);
+        }*/
+        let mut transformedWalls: Vec<HyperWall> = walls.into_iter().map(|w| w.into()).collect();
+        transformedWalls.sort_unstable();
         println!("{:?}", transformedWalls);
-        Map {
+        HyperMap {
             walls: transformedWalls,
         }
     }
 
-    /// Returns the light intensity of a wall at a certain point depending on the viewing angle.
-    ///
-    /// # Parameters:
-    ///		- point:		The point of the wall from which the light intensity is queried.
-    ///		- direction:	The direction the wall is viewn from
-    pub fn light_intensity_for_wall(point: Point, direction: Angle) -> f64 {
-        // Determine on which side of the wall the point resides.
-        let closest_axis = point.closest_grid_line_axis();
-        let viewing_direction = Direction::from_angle(&direction, &closest_axis);
+    pub fn get_walls_iter(&self) -> impl Iterator<Item = &HyperWall> {
+        self.walls.iter()
+    }
 
-        match closest_axis {
-            // The ray hit a wall that is parallel to the x-axis
-            Axis::X => match viewing_direction {
-                Direction::Increasing => 1.0,
-                Direction::Decreasing => 0.6,
-            },
-
-            // The ray hit a wall that is parallel to the y-axis
-            Axis::Y => match viewing_direction {
-                Direction::Increasing => 0.4,
-                Direction::Decreasing => 0.8,
-            },
+    pub fn rotate(&mut self, step: f64) {
+        for wall in &mut self.walls {
+            wall.beginning.rotate(step);
+            wall.end.rotate(step);
         }
+        self.walls.sort_unstable();
+    }
+
+    pub fn translate(&mut self, x: f64, y: f64) {
+        for wall in &mut self.walls {
+            wall.beginning.translate(x, y);
+            wall.end.translate(x, y);
+        }
+        self.walls.sort_unstable();
     }
 }
