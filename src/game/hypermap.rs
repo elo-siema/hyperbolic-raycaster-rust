@@ -40,8 +40,14 @@ impl HyperMap {
         }
     }
 
+    //Guaranteed sorted by distance from origin descending.
     pub fn get_walls_iter(&self) -> impl Iterator<Item = &HyperWall> {
         self.walls.iter()
+    }
+
+    //Guaranteed sorted by distance from origin descending.
+    pub fn get_walls_as_poncaire(&self) -> Vec<PoncaireWall> {
+        self.walls.iter().map(|hw| hw.clone().into()).collect() //todo: don't clone
     }
 
     pub fn rotate(&mut self, step: f64) {

@@ -5,9 +5,7 @@ mod game;
 mod hyperbolic_renderer;
 mod utils;
 mod window;
-
-use game::hypermap::Map;
-use game::player::Player;
+use game::{hypermap::HyperMap, player::Player};
 use game::Game;
 use hyperbolic_renderer::Renderer;
 use std::process::exit;
@@ -22,7 +20,7 @@ fn main() {
     // Initialize the graphics and event handling.
     let mut window = Window::new();
 
-    let map = Map::new(include_str!("../assets/poncairemap2.json"));
+    let map = HyperMap::new(include_str!("../assets/poncairemap2.json"));
     // Load the game and place the player within the map.
     let game = Game::new(map);
 

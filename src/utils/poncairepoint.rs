@@ -1,6 +1,7 @@
 use hyperpoint::{HyperWall, Hyperpoint};
 use nalgebra::*;
 use serde::Deserialize;
+use point::Point;
 
 use crate::utils::hyperpoint;
 
@@ -64,6 +65,7 @@ impl From<HyperWall> for PoncaireWall {
 }
 
 impl PoncaireWall{
+    ///Constructs a geodesic between wall ends in the Poncarie disk model.
     fn find_circle_through_points(&self) -> (f64, f64, f64) {
         //https://math.stackexchange.com/questions/1503466/algebraic-solutions-for-poincar%C3%A9-disk-arcs
         let p = self.beginning.0;
@@ -102,7 +104,64 @@ impl PoncaireWall{
         (x0, y0, r0)
     }
 
-    pub fn intersection(&self, angle: f64) -> Option<f64> {
-        todo!()
+    ///Checks whether p is within bounding box described by wall ends.
+    fn is_point_on_wall(&self, p: PoncairePoint) -> bool {
+        let (x1, y1): (f64, f64) = (self.beginning.0[0], self.beginning.0[1]);
+        let (x2, y2): (f64, f64) = (self.end.0[0], self.end.0[1]);
+        let (xp, yp): (f64, f64) = (self.end.0[0], self.end.0[1]);
+
+        let (xmin, xmax) = (x1.min(x2), x1.max(x2));
+        let (ymin, ymax) = (y1.min(y2), y1.max(y2));
+        if xp < xmin || xp > xmax {
+            return false;
+        }
+        if yp < ymin || yp > ymax {
+            return false;
+        }
+        return true;
+    }
+
+    ///Finds distance from origin to the closest intersection point, if that point lies on the wall.
+    pub fn find_distance_of_intersection_with_ray(&self, angle: f64) -> Option<f64> {
+        let (a, b, r) = self.find_circle_through_points();
+        let (mut t0, mut t1): (f64, f64);
+        let m = angle.tan();
+        let r2 = r.powi(2);
+        let m2 = m.powi(2);
+
+        let delta = r2*(1.+m2)-(b-m*a).powi(2);
+        let deltasqrt = delta.sqrt();
+        if deltasqrt.is_nan() {
+            return None;
+        }
+        
+        let x1 = (a+b*m+deltasqrt)/(1.+m2);
+        let x2 = (a+b*m-deltasqrt)/(1.+m2);
+
+        let y1 = (a*m+b*m2+m*deltasqrt)/(1.+m2);
+        let y2 = (a*m+b*m2-m*deltasqrt)/(1.+m2);
+
+        let p1 = PoncairePoint::new(x1, y1);
+        let p2 = PoncairePoint::new(x2, y2);
+
+        let d1 = p1.distance_to_origin();
+        let d2 = p2.distance_to_origin();
+
+        let minD;
+        let minP;
+        
+        if d1 <= d2 {
+            minD = d1;
+            minP = p1;
+        }
+        else {
+            minD = d2;
+            minP = p2;
+        }
+
+        match self.is_point_on_wall(minP) {
+            true => Some(minD),
+            false => None
+        }
     }
 }

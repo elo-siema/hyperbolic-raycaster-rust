@@ -8,9 +8,6 @@ use line_drawing::Bresenham;
 use nalgebra::Point2;
 
 enum Hit {
-	/// The ray never hit a wall
-	None,
-
 	/// The ray hit a wall with a given color at a given distance.
 	Wall {color: RGBColor, distance: f64}
 }
@@ -65,57 +62,57 @@ impl Renderer {
     /// # Parameters:
     ///		- canvas		The canvas that should be drawn to.
     pub fn render(&self, canvas: &mut Canvas) {
+		let walls: Vec<PoncaireWall> = self.game.map.get_walls_as_poncaire();
 		for column in 0..canvas.width() {
-			self.render_column(column, canvas);
+			self.render_column(column, canvas, &walls);
 		}
 	}
 	
-	fn render_column(&self, column: usize, canvas: &mut Canvas) {
+	fn render_column(&self, column: usize, canvas: &mut Canvas, walls: &[PoncaireWall]) {
 		// Cast the ray to find a nearby wall
-		let scanning_result = self.cast_ray(column, canvas.width());
+		let scanning_result = self.cast_ray(column, canvas.width(), walls);
 
 		// Draw scanning result to the canvas
 		self.draw_hit(scanning_result, column, canvas);
 	}
 
-	fn cast_ray(&self, column: usize, max_column: usize) -> Hit {
+	fn cast_ray(&self, column: usize, max_column: usize, walls: &[PoncaireWall]) -> Option<Hit> {
 		// Determine the absolute angle of the ray
 		let relative_angle = self.ray_angle(column, max_column);
 		let absolute_angle = relative_angle;
 
-		// Create the ray
-		let mut ray = Ray::new(Point2::<f64>::new(0.0,0.0), absolute_angle);
 
-		// Grow the ray stepy by step. Grow it until we either hit a wall or reached the maximal possible distance inside our map
-		while ray.length <= 2 as f64 {
-			ray = ray.grow();
-
-			
+		//Lazily iterate over walls from closest to farthest until a hit is found
+		let found_wall = walls.iter().map(|wall| {
+			match wall.find_distance_of_intersection_with_ray(relative_angle) {
+				Some(distance) => {
 					// Fix the calculated distance to correct the fisheye effect
-					let projected_distance = ray.length * relative_angle.cos();	
-						
+					let projected_distance = distance * relative_angle.cos();	
+							
 					// Apply some lighting to the wall's color
-					let wall_light_intensity = Map::light_intensity_for_wall(ray.end, ray.angle);
-					let distance_light_intensity = (1.0 - ray.length/self.illumination_radius).max(self.minimum_light).min(1.0);
-					let illuminated_color = color.adjust_light_intensity(distance_light_intensity * wall_light_intensity);
-
+					//let wall_light_intensity = Map::light_intensity_for_wall(ray.end, ray.angle);
+					let distance_light_intensity = (1.0 - distance/self.illumination_radius).max(self.minimum_light).min(1.0);
+					let illuminated_color = wall.color.adjust_light_intensity(distance_light_intensity/* * wall_light_intensity*/);
+	
 					// Pass the result
-					return Hit::Wall {color: illuminated_color, distance: projected_distance}
-				
-				
-			
-		}	
+					Some(Hit::Wall {color: illuminated_color, distance: projected_distance})
+				}
+			    None => None
+			}
+		}).find(|e| match e {
+			Some(_) => true,
+			_ => false
+		});
 
-		// The ray casting reached the outer bounds of our map. We never hit a wall...
-		return Hit::None;
+		found_wall.flatten()
 	}
 
-		fn draw_hit(&self, hit: Hit, column: usize, canvas: &mut Canvas) {
+		fn draw_hit(&self, hit: Option<Hit>, column: usize, canvas: &mut Canvas) {
 		match hit {
 			// We did not found a wall, just draw an empty space
-			Hit::None => self.draw_wall(0.0, RGBColor::black(), canvas, column),
+			None => self.draw_wall(0.0, RGBColor::black(), canvas, column),
 			
-			Hit::Wall {color, distance} => {
+			Some(Hit::Wall {color, distance}) => {
 				// Determine the visual height of the wall on the screen (normalized to the screen's height)
 				let normalized_wall_height = 1.0 / distance;
 
