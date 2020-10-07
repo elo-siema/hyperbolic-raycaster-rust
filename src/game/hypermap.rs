@@ -34,7 +34,7 @@ impl HyperMap {
         }*/
         let mut transformedWalls: Vec<HyperWall> = walls.into_iter().map(|w| w.into()).collect();
         transformedWalls.sort_unstable();
-        println!("{:?}", transformedWalls);
+        //println!("{:?}", transformedWalls);
         HyperMap {
             walls: transformedWalls,
         }
@@ -47,7 +47,9 @@ impl HyperMap {
 
     //Guaranteed sorted by distance from origin descending.
     pub fn get_walls_as_poncaire(&self) -> Vec<PoncaireWall> {
-        self.walls.iter().map(|hw| hw.clone().into()).collect() //todo: don't clone
+        let mut wallsp: Vec<PoncaireWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
+        //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
+        wallsp
     }
 
     pub fn rotate(&mut self, step: f64) {

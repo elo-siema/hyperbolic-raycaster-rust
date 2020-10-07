@@ -1,68 +1,68 @@
 [
     {
-        "beginning":  [0.1, 0.1],
-        "end":  [0.1, -0.1],
+        "beginning":  [0.01, 0.01],
+        "end":  [0.01, -0.01],
         "color": {
-            "red": 255,
+            "red": 180,
             "green": 0,
             "blue": 0
         }
     },{
-        "beginning":  [0.1, 0.1],
-        "end":  [0.2, 0.1],
+        "beginning":  [0.01, 0.01],
+        "end":  [0.02, 0.01],
         "color": {
-            "red": 255,
+            "red": 235,
             "green": 0,
             "blue": 0
         }
     },{
-        "beginning":  [0.1, -0.1],
-        "end":  [0.2, -0.1],
+        "beginning":  [0.01, -0.01],
+        "end":  [0.02, -0.01],
         "color": {
-            "red": 255,
+            "red": 235,
             "green": 0,
             "blue": 0
         }
     },{
-        "beginning":  [0.2, 0.1],
-        "end":  [0.2, -0.1],
+        "beginning":  [0.02, 0.01],
+        "end":  [0.02, -0.01],
         "color": {
-            "red": 255,
+            "red": 180,
             "green": 0,
             "blue": 0
         }
     },
 
     {
-        "beginning":  [-0.1, 0.1],
-        "end":  [-0.1, -0.1],
+        "beginning":  [-0.01, 0.01],
+        "end":  [-0.01, -0.01],
         "color": {
-            "red": 0,
-            "green": 0,
+            "red": 50,
+            "green": 50,
+            "blue": 200
+        }
+    },{
+        "beginning":  [-0.01, 0.01],
+        "end":  [-0.02, 0.01],
+        "color": {
+            "red": 50,
+            "green": 50,
             "blue": 255
         }
     },{
-        "beginning":  [-0.1, 0.1],
-        "end":  [-0.2, 0.1],
+        "beginning":  [-0.02, 0.01],
+        "end":  [-0.02, -0.01],
         "color": {
-            "red": 0,
-            "green": 0,
-            "blue": 255
+            "red": 50,
+            "green": 50,
+            "blue": 200
         }
     },{
-        "beginning":  [-0.2, 0.1],
-        "end":  [-0.2, -0.1],
+        "beginning":  [-0.01, -0.01],
+        "end":  [-0.02, -0.01],
         "color": {
-            "red": 0,
-            "green": 0,
-            "blue": 255
-        }
-    },{
-        "beginning":  [-0.1, -0.1],
-        "end":  [-0.2, -0.1],
-        "color": {
-            "red": 0,
-            "green": 0,
+            "red": 50,
+            "green": 50,
             "blue": 255
         }
     }

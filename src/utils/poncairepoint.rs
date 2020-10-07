@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use hyperpoint::{HyperWall, Hyperpoint};
 use nalgebra::*;
 use serde::Deserialize;
@@ -33,18 +35,35 @@ impl point::Point for PoncairePoint {
     }
 
     fn distance_to_origin(&self) -> f64 {
+        self.distance_to(&PoncairePoint::new_at_origin())
+    }
+    /*fn distance_to_origin(&self) -> f64 {
         let euclidian_distance = 
             (self.0[0].powi(2) + self.0[1].powi(2))
             .sqrt();
-        f64::ln(euclidian_distance)
-    }
+        euclidian_distance
+    }*/
 
     fn new_at_origin() -> Self {
-        todo!()
+        PoncairePoint::new(0.,0.)
     }
 
     fn distance_to(&self, to: &Self) -> f64 {
-        todo!() //fuck that
+        let (x1, y1): (f64, f64) = (self.0[0], self.0[1]);
+        let (x2, y2): (f64, f64) = (to.0[0], to.0[1]);
+
+        let z1 = nalgebra::Complex::new(x1,y1);
+        let z2 = nalgebra::Complex::new(x2,y2);
+        let one = nalgebra::Complex::new(1., 0.);
+    
+        
+        let upper: Complex<f64> = z1-z2;
+        let lower: Complex<f64> = one-z1*(z2.conj());
+        let div: Complex<f64> = upper/lower;
+        let norm: f64 = div.norm();
+        let result: f64 = 2.*norm.atanh();
+        let a = 4;
+        result
     }
 }
 
@@ -88,8 +107,8 @@ impl PoncaireWall{
             );
         let y0 = 
             (
-                - qy*(px2+py2+1.) + 
-                py*(qx2+qy2+1.)
+                - qx*(px2+py2+1.) + 
+                px*(qx2+qy2+1.)
             ) / 
             (
                 2.*(px*qy-py*qx)
@@ -104,28 +123,44 @@ impl PoncaireWall{
         (x0, y0, r0)
     }
 
+    fn find_angle_on_wall(&self, x: f64, y: f64, x0: f64, y0:f64) -> f64{
+        let ang = (y-y0).atan2(x-x0);
+        match ang < 0. {
+            true => ang + 2.*std::f64::consts::PI,
+            false => ang
+        }
+    }
+
+    fn normalize_angle(angle: f64) -> f64 {
+        0.
+    }
+
     ///Checks whether p is within bounding box described by wall ends.
-    fn is_point_on_wall(&self, p: PoncairePoint) -> bool {
+    fn is_point_on_wall(&self, p: PoncairePoint, x0: f64, y0: f64) -> bool {
         let (x1, y1): (f64, f64) = (self.beginning.0[0], self.beginning.0[1]);
         let (x2, y2): (f64, f64) = (self.end.0[0], self.end.0[1]);
-        let (xp, yp): (f64, f64) = (self.end.0[0], self.end.0[1]);
+        let (xp, yp): (f64, f64) = (p.0[0], p.0[1]);
 
-        let (xmin, xmax) = (x1.min(x2), x1.max(x2));
-        let (ymin, ymax) = (y1.min(y2), y1.max(y2));
-        if xp < xmin || xp > xmax {
-            return false;
+        let angle1 = self.find_angle_on_wall(x1, y1, x0, y0);
+        let angle2 = self.find_angle_on_wall(x2, y2, x0, y0);
+        let anglep = self.find_angle_on_wall(xp, yp, x0, y0);
+
+        let (anglemin, anglemax) = (angle1.min(angle2), angle1.max(angle2));
+        let mut result = false;
+        if anglep < anglemin || anglep > anglemax { //todo:: look at this when passing X axis
+            result =  false;
+        } else {
+            result = true;
         }
-        if yp < ymin || yp > ymax {
-            return false;
-        }
-        return true;
+        //println!("min:{},max:{},p:{},{:?}",anglemin, anglemax, anglep, result);
+        result
     }
 
     ///Finds distance from origin to the closest intersection point, if that point lies on the wall.
     pub fn find_distance_of_intersection_with_ray(&self, angle: f64) -> Option<f64> {
         let (a, b, r) = self.find_circle_through_points();
         let (mut t0, mut t1): (f64, f64);
-        let m = angle.tan();
+        let m = angle;//.tan();
         let r2 = r.powi(2);
         let m2 = m.powi(2);
 
@@ -147,21 +182,25 @@ impl PoncaireWall{
         let d1 = p1.distance_to_origin();
         let d2 = p2.distance_to_origin();
 
-        let minD;
-        let minP;
-        
-        if d1 <= d2 {
-            minD = d1;
-            minP = p1;
-        }
-        else {
-            minD = d2;
-            minP = p2;
-        }
+        let mut points = vec![(d1, p1),(d2,p2)];
+        points.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(Ordering::Equal));
+        let minPoint = points.into_iter().find(|e| {
+            let x = (e.1).0[0];
+            x > 0. && !e.0.is_nan()
+        });
 
-        match self.is_point_on_wall(minP) {
-            true => Some(minD),
-            false => None
+        match minPoint {
+            Some((distance, point)) => {
+                match self.is_point_on_wall(point, a, b) {
+                    true => {
+                        Some(distance)
+                    },
+                    false => {
+                        None
+                    }
+                }
+            },
+            None => None
         }
     }
 }

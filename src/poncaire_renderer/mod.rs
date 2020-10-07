@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
 use crate::{game::Game, utils::poncairepoint::PoncairePoint, utils::poncairepoint::PoncaireWall};
@@ -52,13 +54,13 @@ impl Renderer {
     /// # Parameters:
     ///		- canvas		The canvas that should be drawn to.
     pub fn render(&self, canvas: &mut Canvas) {
-        let helper: PoncairePoint = self.game.map.walls[0].beginning.clone().into();
+        //let helper: PoncairePoint = self.game.borrow().map.walls[0].beginning.clone().into();
         //println!("{:?}", helper);
         //for a in self.game.map
 
         self.game
             .map
-            .walls
+            .get_walls_as_poncaire()
             .iter()
             .map(|w| w.clone().into())
             .for_each(|wall: PoncaireWall| {
