@@ -1,0 +1,69 @@
+[
+    {
+        "beginning":  [0.01, 0.01],
+        "end":  [0.01, -0.01],
+        "color": {
+            "red": 180,
+            "green": 0,
+            "blue": 0
+        }
+    },{
+        "beginning":  [0.01, 0.01],
+        "end":  [0.02, 0.01],
+        "color": {
+            "red": 235,
+            "green": 0,
+            "blue": 0
+        }
+    },{
+        "beginning":  [0.01, -0.01],
+        "end":  [0.02, -0.01],
+        "color": {
+            "red": 235,
+            "green": 0,
+            "blue": 0
+        }
+    },{
+        "beginning":  [0.02, 0.01],
+        "end":  [0.02, -0.01],
+        "color": {
+            "red": 180,
+            "green": 0,
+            "blue": 0
+        }
+    },
+
+    {
+        "beginning":  [-0.01, 0.01],
+        "end":  [-0.01, -0.01],
+        "color": {
+            "red": 50,
+            "green": 50,
+            "blue": 200
+        }
+    },{
+        "beginning":  [-0.01, 0.01],
+        "end":  [-0.02, 0.01],
+        "color": {
+            "red": 50,
+            "green": 50,
+            "blue": 255
+        }
+    },{
+        "beginning":  [-0.02, 0.01],
+        "end":  [-0.02, -0.01],
+        "color": {
+            "red": 50,
+            "green": 50,
+            "blue": 200
+        }
+    },{
+        "beginning":  [-0.01, -0.01],
+        "end":  [-0.02, -0.01],
+        "color": {
+            "red": 50,
+            "green": 50,
+            "blue": 255
+        }
+    }
+]
