@@ -77,17 +77,15 @@ impl Renderer {
 
 	fn cast_ray(&self, column: usize, max_column: usize, walls: &[PoncaireWall]) -> Option<Hit> {
 		// Determine the absolute angle of the ray
-		let relative_angle = self.ray_angle(column, max_column);
-		let absolute_angle = relative_angle;
-		//println!("{}", relative_angle);
+		let angle = self.ray_angle(column, max_column);
 		let mut maxHit: Option<Hit> = None;
 
 		//Lazily iterate over walls from closest to farthest until a hit is found
 		walls.iter().for_each(|wall| {
-			match wall.find_distance_of_intersection_with_ray(relative_angle) {
+			match wall.find_distance_of_intersection_with_ray(angle) {
 				Some(distance) => {
 					// Fix the calculated distance to correct the fisheye effect
-					let projected_distance = distance * relative_angle.cos();	
+					let projected_distance = distance * angle.cos();	
 							
 					// Apply some lighting to the wall's color
 					//let wall_light_intensity = Map::light_intensity_for_wall(ray.end, ray.angle);
@@ -95,7 +93,6 @@ impl Renderer {
 					let illuminated_color = wall.color.adjust_light_intensity(distance_light_intensity/* * wall_light_intensity*/);
 	
 					// Pass the result
-					//Some(Hit::Wall {color: illuminated_color, distance: projected_distance})
 					match &maxHit {
 						Some(Hit::Wall { color, distance }) => {
 							if projected_distance < *distance {
@@ -119,7 +116,7 @@ impl Renderer {
 			
 			Some(Hit::Wall {color, distance}) => {
 				// Determine the visual height of the wall on the screen (normalized to the screen's height)
-				let normalized_wall_height = 0.01 / distance;
+				let normalized_wall_height = 0.1 / distance;
 
 				// Finally: Draw the wall for the current view position…
 				self.draw_wall(normalized_wall_height, color, canvas, column)

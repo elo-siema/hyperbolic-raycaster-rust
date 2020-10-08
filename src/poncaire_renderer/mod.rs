@@ -52,10 +52,6 @@ impl Renderer {
     /// # Parameters:
     ///		- canvas		The canvas that should be drawn to.
     pub fn render(&self, canvas: &mut Canvas) {
-        //let helper: PoncairePoint = self.game.borrow().map.walls[0].beginning.clone().into();
-        //println!("{:?}", helper);
-        //for a in self.game.map
-
         self.game
             .map
             .get_walls_as_poncaire()

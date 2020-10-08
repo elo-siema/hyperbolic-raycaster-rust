@@ -23,12 +23,12 @@ fn main() {
     let mut window = Window::new();
 
     //let map = HyperMap::new(include_str!("../assets/singlewall.json"));
-    let map = HyperMap::new(include_str!("../assets/poncairemap2.json"));
+    let map = HyperMap::new(include_str!("../assets/5square.json"));
     // Load the game and place the player within the map.
     let game = Game::new(map);
 
     // Initialize the renderer
-    let mut renderer = Renderer::new(game, 1.0, 0.75, 0.5, 0.25);
+    let mut renderer = Renderer::new(game, 1.0, 0.75, 1., 0.25);
 
     // Require a screen refresh after startup.
     let mut initial_run = true;
@@ -71,7 +71,7 @@ fn main_loop(window: &mut Window, renderer: &mut Renderer, initial_run: &bool) {
     // Handle key presses
     for keycode in window.event_source.pressed_keycodes() {
         needs_refresh = true;
-        let movement_speed = 0.002;
+        let movement_speed = 0.01;
         let rotation_speed = 0.05;
 
         match keycode {
