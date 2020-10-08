@@ -1,9 +1,6 @@
 pub mod hypermap;
-pub mod player;
-pub mod map;
 
 use crate::game::hypermap::*;
-use crate::game::player::Player;
 
 /// Represents the state of our game's virtual world
 pub struct Game {

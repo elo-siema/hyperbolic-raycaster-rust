@@ -1,13 +1,8 @@
-mod ray;
-
 use std::{cell::RefCell, rc::Rc};
 
-//use crate::{hyperbolic_renderer::ray::*, utils::color};
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
 use crate::{game::Game, utils::poncairepoint::PoncairePoint, utils::poncairepoint::PoncaireWall};
-use line_drawing::Bresenham;
-use nalgebra::Point2;
 
 enum Hit {
 	/// The ray hit a wall with a given color at a given distance.

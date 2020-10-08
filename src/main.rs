@@ -6,7 +6,7 @@ mod hyperbolic_renderer;
 mod poncaire_renderer;
 mod utils;
 mod window;
-use game::{hypermap::HyperMap, player::Player};
+use game::{hypermap::HyperMap};
 use game::Game;
 use hyperbolic_renderer::Renderer;
 //use poncaire_renderer::Renderer;
