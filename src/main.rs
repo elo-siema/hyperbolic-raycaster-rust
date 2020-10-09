@@ -1,4 +1,5 @@
 extern crate sdl2;
+use std::panic;
 
 mod emscripten;
 mod game;
@@ -19,6 +20,7 @@ use window::event::Keycode;
 use window::Window;
 
 fn main() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
     // Initialize the graphics and event handling.
     let mut window = Window::new();
 
