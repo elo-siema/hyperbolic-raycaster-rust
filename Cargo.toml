@@ -15,4 +15,4 @@ console_error_panic_hook = "0.1.6"
 version = "0.31.0"
 
 [profile.dev]
-opt-level = 3
+opt-level = 0
