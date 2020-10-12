@@ -1,10 +1,16 @@
 extern crate sdl2;
 
-use crate::window::canvas::Canvas;
+use std::{cell::RefCell, rc::Rc, sync::Arc};
+
+use sdl2::{pixels::Color, render::WindowCanvas, video::Window};
+
+use super::canvas::Canvas;
+
+//use crate::window::canvas::Canvas;
 
 /// A screen tile that can be used for drawing. (E.g. the content tile of a window or a HTML canvas.)
 pub struct View {
-    canvas: sdl2::render::Canvas<sdl2::video::Window>,
+    pub canvas: WindowCanvas,
 }
 
 impl View {
@@ -13,20 +19,26 @@ impl View {
         let video_subsystem = sdl_context.video().unwrap();
         let window = video_subsystem
             .window("Ray Casting Demo", 800, 600)
-            .resizable()
             .position_centered()
-            .allow_highdpi()
             .opengl()
             .build()
+            .map_err(|e| e.to_string())
             .unwrap();
-        let canvas = window
+        let canvas =window
             .into_canvas()
-            .accelerated()
-            .present_vsync()
             .build()
+            .map_err(|e| e.to_string())
             .unwrap();
+            
+        /*canvas.set_draw_color(Color::RGB(255, 0, 0));
+        canvas.clear();
+        canvas.present();*/
 
-        View { canvas }
+        //canvas.borrow_mut().set_draw_color(Color::RGB(255, 0, 0));
+        //canvas.borrow_mut().clear();
+        //canvas.borrow_mut().present();
+            
+        View { canvas}
     }
 
     /// Creates a new canvas for draing a single frame and passes it to the given block. After the block has been finished, the canvas is drawn to the
@@ -34,7 +46,7 @@ impl View {
     where
         F: FnOnce(&mut Canvas),
     {
-        let texture_creator = self.canvas.texture_creator();
+        /*let texture_creator = self.canvas.texture_creator();
         let width = self.canvas.window().size().0;
         let height = self.canvas.window().size().1;
 
@@ -54,6 +66,12 @@ impl View {
             .unwrap();
 
         self.canvas.copy(&texture, None, None).unwrap();
-        self.canvas.present();
+        self.canvas.present();*/
+        println!("dooopa");
+        /*
+        canvas.set_draw_color(Color::RGB(255, 0, 0));
+        canvas.clear();
+        canvas.present();
+        */
     }
 }

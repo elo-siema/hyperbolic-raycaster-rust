@@ -10,9 +10,11 @@ serde_json = "1.0"
 nalgebra = {version = "*", features = ["serde-serialize"]}
 line_drawing = "*"
 console_error_panic_hook = "0.1.6"
+web-sys = {version = "*", features = ["Window"]}
+wasm-bindgen = "*"
 
 [dependencies.sdl2]
-version = "0.31.0"
+version = "*"
 
 [profile.dev]
-opt-level = 0
+opt-level = 3
