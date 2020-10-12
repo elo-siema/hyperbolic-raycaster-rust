@@ -252,7 +252,6 @@ fn main_loop() {
                     //window.view.draw_canvas({move  |mut canvas|() /*renderer.render(&mut canvas)*/ });
                 }
             });
-            w.replace_with(|_| false);
         });
     });
 }
