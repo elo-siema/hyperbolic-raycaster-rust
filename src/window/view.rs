@@ -24,12 +24,12 @@ impl View {
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
-        let canvas =window
+        let canvas = window
             .into_canvas()
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
-            
+
         /*canvas.set_draw_color(Color::RGB(255, 0, 0));
         canvas.clear();
         canvas.present();*/
@@ -37,8 +37,8 @@ impl View {
         //canvas.borrow_mut().set_draw_color(Color::RGB(255, 0, 0));
         //canvas.borrow_mut().clear();
         //canvas.borrow_mut().present();
-            
-        View { canvas}
+
+        View { canvas }
     }
 
     /// Creates a new canvas for draing a single frame and passes it to the given block. After the block has been finished, the canvas is drawn to the

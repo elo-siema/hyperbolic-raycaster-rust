@@ -2,7 +2,7 @@ use crate::utils::geometry::Angle;
 use crate::utils::geometry::Axis;
 use crate::utils::geometry::Direction;
 use crate::utils::geometry::Point;
-use crate::utils::{color::RGBColor, hyperpoint::HyperWall, poncairepoint::PoncaireWall, point::*};
+use crate::utils::{color::RGBColor, hyperpoint::HyperWall, point::*, poncairepoint::PoncaireWall};
 use std::{collections::BTreeSet, f64::*};
 
 //use super::map::Map;
@@ -13,10 +13,7 @@ pub struct HyperMap {
     walls: Vec<HyperWall>,
 }
 
-pub struct WallIterator {
-
-}
-
+pub struct WallIterator {}
 
 impl HyperMap {
     /// Creates a new map from the given string.
@@ -48,7 +45,7 @@ impl HyperMap {
     //Guaranteed sorted by distance from origin descending.
     pub fn get_walls_as_poncaire(&self) -> Vec<PoncaireWall> {
         let mut wallsp: Vec<PoncaireWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
-        //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
+                                                                                                     //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
         wallsp
     }
 

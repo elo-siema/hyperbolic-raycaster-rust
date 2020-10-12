@@ -368,6 +368,7 @@ name = "raycaster"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
+ "lazy_static 0.2.11",
  "line_drawing",
  "nalgebra",
  "sdl2",

@@ -7,7 +7,7 @@ pub trait Point {
     fn new_at_origin() -> Self;
 }
 
-pub trait Wall : Ord + Eq + PartialEq + PartialOrd {
+pub trait Wall: Ord + Eq + PartialEq + PartialOrd {
     fn distance_to_closest_point(&self) -> f64;
     fn intersection(&self, angle: f64) -> Option<f64>;
 }

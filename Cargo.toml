@@ -12,6 +12,7 @@ line_drawing = "*"
 console_error_panic_hook = "0.1.6"
 web-sys = {version = "*", features = ["Window"]}
 wasm-bindgen = "*"
+lazy_static = "*"
 
 [dependencies.sdl2]
 version = "*"
