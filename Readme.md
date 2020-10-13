@@ -27,7 +27,7 @@ Projecting this space onto a computer screen, as well as applying transformation
 
 5. Then the hits are filtered and checked whether the intersection point is actually contained within the arc of the geodesic between these two points. 
 
-6. The closest hit according to the Minkowski metric is chosen and drawn on the screen.
+6. The closest hit according to the Poncaire metric is chosen and drawn on the screen.
 
 For details on the ray casting part I recommend [hydrixos' writeup][10] on his Swift project. This differs slightly as it's not using a grid map, but the general principle applies.
 
