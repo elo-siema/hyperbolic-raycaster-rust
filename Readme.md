@@ -19,7 +19,7 @@ Projecting this space onto a computer screen, as well as applying transformation
 
 1. Map is stored as an array of walls consisting of 2 points (beginning, end) with coordinates in the [Poncaire disk model][7]. This is chosen as it's relatively easy to design by placing points on a tesselated Poncaire disk and writing down coordinates.
 
-2. Next, the map is converted to [Minkowski hyperboloid model][8]. This is done so that transformations of the space with player movement are easy to implement and formulas are analogous to the ones used in Eucludian space. This approach was suggested by ZenoRogue, and after trying to research gyrovectors, I can definitely see why. [Very helpful StackExchange thread][9]
+2. Next, the map is converted to [Minkowski hyperboloid model][8]. This is done so that transformations of the space with player movement are easy to implement and formulas are analogous to the ones used in Euclidian space. This approach was suggested by ZenoRogue, and after trying to research gyrovectors, I can definitely see why. [Very helpful StackExchange thread][9]
 
 3. To render a frame, current state of the world is again converted to Poncaire disk model, for ease of casting rays and finding intersections. 
 
