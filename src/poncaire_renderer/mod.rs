@@ -1,6 +1,6 @@
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
-use crate::{game::Game, utils::poncairepoint::PoncairePoint, utils::poncairepoint::PoncaireWall};
+use crate::{game::Game, utils::poncairepoint::PoncaireWall};
 use line_drawing::Bresenham;
 
 /// Draws a top-down view on a Poncaire disk.
@@ -62,6 +62,7 @@ impl Renderer {
             });
     }
 
+    /// Draws wall as a line on the Poncaire disk model.
     fn draw_wall(&self, wall: &PoncaireWall, canvas: &mut Canvas) {
         let start =
             self.translate_to_canvas_coords(wall.beginning.0[0], wall.beginning.0[1], canvas);
@@ -74,14 +75,15 @@ impl Renderer {
 
     ///expects x and y between -1:1
     fn draw_point_of_a_disc(&self, x: f64, y: f64, color: &RGBColor, canvas: &mut Canvas) {
-        let (outputX, outputY) = self.translate_to_canvas_coords(x, y, canvas);
-        canvas.draw_pixel_big(outputX as usize, outputY as usize, &color);
+        let (output_x, output_y) = self.translate_to_canvas_coords(x, y, canvas);
+        canvas.draw_pixel_big(output_x as usize, output_y as usize, &color);
     }
 
+    /// todo:: Consider the size of the canvas.
     fn translate_to_canvas_coords(&self, x: f64, y: f64, canvas: &Canvas) -> (i32, i32) {
-        let window_height = canvas.height();
-        let window_width = canvas.width();
-        let left_pad = (window_width - window_height) / 2;
+        //let window_height = canvas.height();
+        //let window_width = canvas.width();
+        //let left_pad = (window_width - window_height) / 2;
 
         (
             ((x + 1.0) * 250.0) as i32 + 150,

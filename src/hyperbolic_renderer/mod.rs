@@ -1,8 +1,6 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
-use crate::{game::Game, utils::poncairepoint::PoncairePoint, utils::poncairepoint::PoncaireWall};
+use crate::{game::Game, utils::poncairepoint::PoncaireWall};
 
 enum Hit {
     /// The ray hit a wall with a given color at a given distance.
@@ -59,14 +57,12 @@ impl Renderer {
     ///		- canvas		The canvas that should be drawn to.
     pub fn render(&self, canvas: &mut Canvas) {
         let walls: Vec<PoncaireWall> = self.game.map.get_walls_as_poncaire();
-        //println!("{:?}", walls[0]);
         for column in 0..canvas.width() {
             self.render_column(column, canvas, &walls);
         }
-        //println!("dupa");
     }
 
-    pub fn render_column(&self, column: usize, canvas: &mut Canvas, walls: &[PoncaireWall]) {
+    fn render_column(&self, column: usize, canvas: &mut Canvas, walls: &[PoncaireWall]) {
         // Cast the ray to find a nearby wall
         let scanning_result = self.cast_ray(column, canvas.width(), walls);
 
@@ -77,47 +73,43 @@ impl Renderer {
     fn cast_ray(&self, column: usize, max_column: usize, walls: &[PoncaireWall]) -> Option<Hit> {
         // Determine the absolute angle of the ray
         let angle = self.ray_angle(column, max_column);
-        let mut maxHit: Option<Hit> = None;
+        let mut closest_hit: Option<Hit> = None;
 
-        //Lazily iterate over walls from closest to farthest until a hit is found
         walls.iter().for_each(|wall| {
             match wall.find_distance_of_intersection_with_ray(angle) {
+				// Ray hit wall
                 Some(distance) => {
                     // Fix the calculated distance to correct the fisheye effect
                     let projected_distance = distance * angle.cos();
 
                     // Apply some lighting to the wall's color
-                    //let wall_light_intensity = Map::light_intensity_for_wall(ray.end, ray.angle);
                     let distance_light_intensity = (1.0
                         - projected_distance / self.illumination_radius)
                         .max(self.minimum_light)
                         .min(1.0);
                     let illuminated_color = wall.color.adjust_light_intensity(
-                        distance_light_intensity, /* * wall_light_intensity*/
+                        distance_light_intensity
                     );
 
                     // Pass the result
-                    match &maxHit {
-                        Some(Hit::Wall { color, distance }) => {
-                            if projected_distance < *distance {
-                                maxHit = Some(Hit::Wall {
-                                    color: illuminated_color,
-                                    distance: projected_distance,
-                                });
-                            }
-                        }
+                    match &closest_hit {
+						// Ignore case when found hit is farther than closest hit up to this point
+						Some(Hit::Wall { color: _, distance }) if projected_distance >= *distance => (),
+						
+						// Update closest hit if it's None, or if we found a closer hit
                         _ => {
-                            maxHit = Some(Hit::Wall {
+                            closest_hit = Some(Hit::Wall {
                                 color: illuminated_color,
                                 distance: projected_distance,
                             })
                         }
                     }
-                }
+				}
+				// Ray did not hit wall
                 None => (),
             }
         });
-        maxHit
+        closest_hit
     }
 
     fn draw_hit(&self, hit: Option<Hit>, column: usize, canvas: &mut Canvas) {
@@ -126,8 +118,9 @@ impl Renderer {
             None => self.draw_wall(0.0, RGBColor::black(), canvas, column),
 
             Some(Hit::Wall { color, distance }) => {
-                // Determine the visual height of the wall on the screen (normalized to the screen's height)
-                let normalized_wall_height = 0.1 / distance;
+				// Determine the visual height of the wall on the screen (normalized to the screen's height)
+				// 0.1 found by experiment. Works well with the scale of things on the Poncaire disk coordinates
+                let normalized_wall_height = 0.1 / distance; //todo:: Allow different wall heights
 
                 // Finally: Draw the wall for the current view position…
                 self.draw_wall(normalized_wall_height, color, canvas, column)
@@ -178,22 +171,5 @@ impl Renderer {
         let relative_position = ((column as f64) / (max_column as f64)) - 0.5;
         let virtual_screen_position = relative_position * self.relative_screen_size;
         return (virtual_screen_position / self.focal_length).atan();
-    }
-
-    ///expects x and y between -1:1
-    fn draw_point_of_a_disc(&self, x: f64, y: f64, color: &RGBColor, canvas: &mut Canvas) {
-        let (outputX, outputY) = self.translate_to_canvas_coords(x, y, canvas);
-        canvas.draw_pixel_big(outputX as usize, outputY as usize, &color);
-    }
-
-    fn translate_to_canvas_coords(&self, x: f64, y: f64, canvas: &Canvas) -> (i32, i32) {
-        let window_height = canvas.height();
-        let window_width = canvas.width();
-        let left_pad = (window_width - window_height) / 2;
-
-        (
-            ((x + 1.0) * 250.0) as i32 + 150,
-            ((y + 1.0) * 250.0) as i32 + 30,
-        )
     }
 }

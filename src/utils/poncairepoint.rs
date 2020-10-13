@@ -8,6 +8,10 @@ use serde::Deserialize;
 use crate::utils::hyperpoint;
 
 use super::{color::RGBColor, point};
+
+/// Struct representing a point on the 
+/// Poncaire disk model.
+/// Wrapper for nalgebra's Point2.
 #[derive(Clone, Debug, Deserialize)]
 pub struct PoncairePoint(pub Point2<f64>);
 
@@ -33,9 +37,11 @@ impl point::Point for PoncairePoint {
         a.0[0] * b.0[0] - a.0[1] * b.0[1]
     }
 
+    /// Distance to origin in the Poncaire metric.
     fn distance_to_origin(&self) -> f64 {
         self.distance_to(&PoncairePoint::new_at_origin())
     }
+
     /*fn distance_to_origin(&self) -> f64 {
         let euclidian_distance =
             (self.0[0].powi(2) + self.0[1].powi(2))
@@ -43,10 +49,12 @@ impl point::Point for PoncairePoint {
         euclidian_distance
     }*/
 
+    /// New point at 0, 0.
     fn new_at_origin() -> Self {
         PoncairePoint::new(0., 0.)
     }
 
+    /// Distance to another point in the Poncaire metric.
     fn distance_to(&self, to: &Self) -> f64 {
         let (x1, y1): (f64, f64) = (self.0[0], self.0[1]);
         let (x2, y2): (f64, f64) = (to.0[0], to.0[1]);
@@ -60,7 +68,6 @@ impl point::Point for PoncairePoint {
         let div: Complex<f64> = upper / lower;
         let norm: f64 = div.norm();
         let result: f64 = 2. * norm.atanh();
-        let a = 4;
         result
     }
 }
@@ -71,6 +78,7 @@ pub struct PoncaireWall {
     pub end: PoncairePoint,
     pub color: RGBColor,
 }
+
 impl From<HyperWall> for PoncaireWall {
     fn from(hyperwall: HyperWall) -> PoncaireWall {
         PoncaireWall {
@@ -82,7 +90,8 @@ impl From<HyperWall> for PoncaireWall {
 }
 
 impl PoncaireWall {
-    ///Constructs a geodesic between wall ends in the Poncarie disk model.
+    /// Constructs a geodesic between wall ends in the Poncarie disk model.
+    /// Returns: a triplet (x_center, y_center, radius)
     fn find_circle_through_points(&self) -> (f64, f64, f64) {
         //https://math.stackexchange.com/questions/1503466/algebraic-solutions-for-poincar%C3%A9-disk-arcs
         let p = self.beginning.0;
@@ -107,19 +116,25 @@ impl PoncaireWall {
         (x0, y0, r0)
     }
 
+    /// Returns the angle of a point on the walls geodesic circle.
+    /// Angle calculated relative to the X axis, eg.
+    /// assuming center point of x: 0, y: 0
+    /// a point at x: 0, y: -1 will have angle: 1.5PI
     fn find_angle_on_wall(&self, x: f64, y: f64, x0: f64, y0: f64) -> f64 {
         let ang = (y - y0).atan2(x - x0);
-        match ang < 0. {
-            true => ang + 2. * std::f64::consts::PI,
-            false => ang,
+        Self::normalize_angle(ang)
+    }
+
+    /// Adds 2*PI to negative angles, so they are positive
+    fn normalize_angle(angle: f64) -> f64 {
+        match angle < 0. {
+            true => angle + 2. * std::f64::consts::PI,
+            false => angle,
         }
     }
 
-    fn normalize_angle(angle: f64) -> f64 {
-        0.
-    }
-
-    ///Checks whether p is within bounding box described by wall ends.
+    /// Checks whether p is located within the arc inscribed by endpoints of
+    /// the wall on the geodesic circle.
     fn is_point_on_wall(&self, p: PoncairePoint, x0: f64, y0: f64) -> bool {
         let (x1, y1): (f64, f64) = (self.beginning.0[0], self.beginning.0[1]);
         let (x2, y2): (f64, f64) = (self.end.0[0], self.end.0[1]);
@@ -130,9 +145,8 @@ impl PoncaireWall {
         let anglep = self.find_angle_on_wall(xp, yp, x0, y0);
 
         let (anglemin, anglemax) = (angle1.min(angle2), angle1.max(angle2));
-        let mut result = false;
+        let result;
         if anglep < anglemin || anglep > anglemax {
-            //todo:: look at this when passing X axis
             result = false;
         } else {
             result = true;
@@ -141,10 +155,10 @@ impl PoncaireWall {
         result
     }
 
-    ///Finds distance from origin to the closest intersection point, if that point lies on the wall.
+    /// Finds distance from origin to the closest intersection point, if that point lies on the wall.
+    /// Uses Poncaire metric implemented on Point struct.
     pub fn find_distance_of_intersection_with_ray(&self, angle: f64) -> Option<f64> {
         let (a, b, r) = self.find_circle_through_points();
-        let (mut t0, mut t1): (f64, f64);
         let m = angle; //.tan();
         let r2 = r.powi(2);
         let m2 = m.powi(2);
@@ -169,17 +183,15 @@ impl PoncaireWall {
 
         let mut points = vec![(d1, p1), (d2, p2)];
         points.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(Ordering::Equal));
-        let minPoint = points.into_iter().find(|e| {
+
+        let (closest_distance, closest_point) = points.into_iter().find(|e| {
             let x = (e.1).0[0];
             x > 0. && !e.0.is_nan()
-        });
+        })?;
 
-        match minPoint {
-            Some((distance, point)) => match self.is_point_on_wall(point, a, b) {
-                true => Some(distance),
-                false => None,
-            },
-            None => None,
+        match self.is_point_on_wall(closest_point, a, b) {
+            true => Some(closest_distance),
+            false => None,
         }
     }
 }
