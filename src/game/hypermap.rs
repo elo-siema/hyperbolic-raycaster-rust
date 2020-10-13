@@ -1,70 +1,69 @@
-use crate::utils::geometry::Angle;
-use crate::utils::geometry::Axis;
-use crate::utils::geometry::Direction;
-use crate::utils::geometry::Point;
-use crate::utils::{color::RGBColor, hyperpoint::HyperWall, poncairepoint::PoncaireWall, point::*};
-use std::{collections::BTreeSet, f64::*};
+use crate::utils::{ hyperpoint::HyperWall, poncairepoint::PoncaireWall};
 
-//use super::map::Map;
-
-/// Represents the map of the 3D maze.
+/// Represents the map in the Minkowski hyperboloid model.
 pub struct HyperMap {
-    /// The tiles of the map, sorted by distance to origin.
+    /// Walls of the map.
     walls: Vec<HyperWall>,
 }
 
-pub struct WallIterator {
-
-}
-
-
 impl HyperMap {
-    /// Creates a new map from the given string.
+    /// Creates a new map from the given JSON string.
     ///
     /// # Parameters
-    ///    - `map_string`:	A string representation of the map, whereas each line represents one row of the map and each character of a line represents a tile of a row.
-    ///						Use the characters R,G,B,Y,O to designate a wall with a certain color. Use spaces to designate empty tiles. Do not use tabs.
+    ///    - `map_string`:	A JSON representation of the map, an array of PoncaireWalls.
     pub fn new(map_string: &str) -> HyperMap {
-        // Go through the map line by line and create either tiles with a certain color or empty tiles.
+        // Parse JSON to PoncaireWalls.
         let walls: Vec<PoncaireWall> = serde_json::from_str(map_string).unwrap();
+
+        // Scrapped idea - representing the walls as a set sorted by distance to origin.
+        // Would need to be checked and resorted every frame.
         /*let mut transformedWalls: BTreeSet<HyperWall> = BTreeSet::<HyperWall>::new();
         for wall in walls {
             let transformed : HyperWall= wall.into();
             transformedWalls.insert(transformed);
         }*/
-        let mut transformedWalls: Vec<HyperWall> = walls.into_iter().map(|w| w.into()).collect();
-        transformedWalls.sort_unstable();
-        //println!("{:?}", transformedWalls);
+
+        // Then transform them into HyperWalls as internal representation.
+        // This is done so it's easier to do transformations on the walls.
+        let mut transformed_walls: Vec<HyperWall> = walls.into_iter().map(|w| w.into()).collect();
+
+        // Sort by distance to origin.
+        transformed_walls.sort_unstable();
         HyperMap {
-            walls: transformedWalls,
+            walls: transformed_walls,
         }
     }
 
-    //Guaranteed sorted by distance from origin descending.
+    /// Returns iterator of HyperWall references.
     pub fn get_walls_iter(&self) -> impl Iterator<Item = &HyperWall> {
         self.walls.iter()
     }
 
-    //Guaranteed sorted by distance from origin descending.
+    /// Returns iterator of PoncaireWall references.
     pub fn get_walls_as_poncaire(&self) -> Vec<PoncaireWall> {
-        let mut wallsp: Vec<PoncaireWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
+        let wallsp: Vec<PoncaireWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
+        //not sorting, because we're iterating through them all anyway
         //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
         wallsp
     }
 
+    /// Rotate all walls around an origin.
     pub fn rotate(&mut self, step: f64) {
         for wall in &mut self.walls {
             wall.beginning.rotate(step);
             wall.end.rotate(step);
         }
+        // Keep walls sorted
         self.walls.sort_unstable();
     }
 
+    /// Move all walls along the x and y axes.
     pub fn translate(&mut self, x: f64, y: f64) {
         for wall in &mut self.walls {
             wall.beginning.translate(x, y);
             wall.end.translate(x, y);
         }
+        // Keep walls sorted
         self.walls.sort_unstable();
     }
 }
