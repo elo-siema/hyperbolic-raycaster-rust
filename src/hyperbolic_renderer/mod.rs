@@ -1,6 +1,6 @@
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
-use crate::{game::Game, utils::poncairepoint::PoncaireWall};
+use crate::{game::Game, utils::poincarepoint::PoincareWall};
 
 enum Hit {
     /// The ray hit a wall with a given color at a given distance.
@@ -56,13 +56,13 @@ impl Renderer {
     /// # Parameters:
     ///		- canvas		The canvas that should be drawn to.
     pub fn render(&self, canvas: &mut Canvas) {
-        let walls: Vec<PoncaireWall> = self.game.map.get_walls_as_poncaire();
+        let walls: Vec<PoincareWall> = self.game.map.get_walls_as_poincare();
         for column in 0..canvas.width() {
             self.render_column(column, canvas, &walls);
         }
     }
 
-    fn render_column(&self, column: usize, canvas: &mut Canvas, walls: &[PoncaireWall]) {
+    fn render_column(&self, column: usize, canvas: &mut Canvas, walls: &[PoincareWall]) {
         // Cast the ray to find a nearby wall
         let scanning_result = self.cast_ray(column, canvas.width(), walls);
 
@@ -70,7 +70,7 @@ impl Renderer {
         self.draw_hit(scanning_result, column, canvas);
     }
 
-    fn cast_ray(&self, column: usize, max_column: usize, walls: &[PoncaireWall]) -> Option<Hit> {
+    fn cast_ray(&self, column: usize, max_column: usize, walls: &[PoincareWall]) -> Option<Hit> {
         // Determine the absolute angle of the ray
         let angle = self.ray_angle(column, max_column);
         let mut closest_hit: Option<Hit> = None;
@@ -119,7 +119,7 @@ impl Renderer {
 
             Some(Hit::Wall { color, distance }) => {
 				// Determine the visual height of the wall on the screen (normalized to the screen's height)
-				// 0.1 found by experiment. Works well with the scale of things on the Poncaire disk coordinates
+				// 0.1 found by experiment. Works well with the scale of things on the Poincare disk coordinates
                 let normalized_wall_height = 0.1 / distance; //todo:: Allow different wall heights
 
                 // Finally: Draw the wall for the current view position…

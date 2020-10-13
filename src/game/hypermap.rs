@@ -1,4 +1,4 @@
-use crate::utils::{ hyperpoint::HyperWall, poncairepoint::PoncaireWall};
+use crate::utils::{ hyperpoint::HyperWall, poincarepoint::PoincareWall};
 
 /// Represents the map in the Minkowski hyperboloid model.
 pub struct HyperMap {
@@ -10,10 +10,10 @@ impl HyperMap {
     /// Creates a new map from the given JSON string.
     ///
     /// # Parameters
-    ///    - `map_string`:	A JSON representation of the map, an array of PoncaireWalls.
+    ///    - `map_string`:	A JSON representation of the map, an array of PoincareWalls.
     pub fn new(map_string: &str) -> HyperMap {
-        // Parse JSON to PoncaireWalls.
-        let walls: Vec<PoncaireWall> = serde_json::from_str(map_string).unwrap();
+        // Parse JSON to PoincareWalls.
+        let walls: Vec<PoincareWall> = serde_json::from_str(map_string).unwrap();
 
         // Scrapped idea - representing the walls as a set sorted by distance to origin.
         // Would need to be checked and resorted every frame.
@@ -39,9 +39,9 @@ impl HyperMap {
         self.walls.iter()
     }
 
-    /// Returns iterator of PoncaireWall references.
-    pub fn get_walls_as_poncaire(&self) -> Vec<PoncaireWall> {
-        let wallsp: Vec<PoncaireWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
+    /// Returns iterator of PoincareWall references.
+    pub fn get_walls_as_poincare(&self) -> Vec<PoincareWall> {
+        let wallsp: Vec<PoincareWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
         //not sorting, because we're iterating through them all anyway
         //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
         wallsp

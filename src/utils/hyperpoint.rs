@@ -5,7 +5,7 @@ use crate::utils::*;
 use cmp::Ordering;
 use nalgebra::*;
 use point::{Point, Wall};
-use poncairepoint::{PoncairePoint, PoncaireWall};
+use poincarepoint::{PoincarePoint, PoincareWall};
 use serde::Deserialize;
 
 /// Struct representing a point on the Minkowski
@@ -14,13 +14,13 @@ use serde::Deserialize;
 #[derive(Clone, Debug, Deserialize)]
 pub struct Hyperpoint(pub Point3<f64>);
 
-impl From<PoncairePoint> for Hyperpoint {
-    fn from(poncaire_point: PoncairePoint) -> Self {
+impl From<PoincarePoint> for Hyperpoint {
+    fn from(poincare_point: PoincarePoint) -> Self {
         //Minkowski metric
-        let norm_squared = PoncairePoint::minkowski_dot(&poncaire_point, &poncaire_point);
+        let norm_squared = PoincarePoint::minkowski_dot(&poincare_point, &poincare_point);
         Hyperpoint::new_with_z(
-            (poncaire_point.0[0] * 2.0) / (1.0 - norm_squared),
-            (poncaire_point.0[1] * 2.0) / (1.0 - norm_squared),
+            (poincare_point.0[0] * 2.0) / (1.0 - norm_squared),
+            (poincare_point.0[1] * 2.0) / (1.0 - norm_squared),
             (1.0 + norm_squared) / (1.0 - norm_squared),
         )
     }
@@ -110,7 +110,7 @@ impl HyperWall {
     /// with the hyperboloid creates a geodesic.
     ///
     /// Potentially can be used for ditching the conversion to
-    /// Poncaire disk model for raycasting.
+    /// Poincare disk model for raycasting.
     fn _find_plane_through_2_points_and_origin(p1: Hyperpoint, p2: Hyperpoint) -> (f64, f64, f64) {
         let (ax, ay, az): (f64, f64, f64) = (p1.0[0], p1.0[1], p1.0[2]);
         let (bx, by, bz): (f64, f64, f64) = (p1.0[0], p1.0[1], p1.0[2]);
@@ -138,12 +138,12 @@ impl Wall for HyperWall {
     }
 }
 
-impl From<PoncaireWall> for HyperWall {
-    fn from(poncaire_wall: PoncaireWall) -> HyperWall {
+impl From<PoincareWall> for HyperWall {
+    fn from(poincare_wall: PoincareWall) -> HyperWall {
         HyperWall {
-            beginning: poncaire_wall.beginning.into(),
-            end: poncaire_wall.end.into(),
-            color: poncaire_wall.color,
+            beginning: poincare_wall.beginning.into(),
+            end: poincare_wall.end.into(),
+            color: poincare_wall.color,
         }
     }
 }

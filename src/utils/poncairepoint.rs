@@ -10,36 +10,36 @@ use crate::utils::hyperpoint;
 use super::{color::RGBColor, point};
 
 /// Struct representing a point on the 
-/// Poncaire disk model.
+/// Poincare disk model.
 /// Wrapper for nalgebra's Point2.
 #[derive(Clone, Debug, Deserialize)]
-pub struct PoncairePoint(pub Point2<f64>);
+pub struct PoincarePoint(pub Point2<f64>);
 
-impl From<Hyperpoint> for PoncairePoint {
+impl From<Hyperpoint> for PoincarePoint {
     fn from(hyperpoint: Hyperpoint) -> Self {
         let denom = hyperpoint.0[2] + 1.0;
-        PoncairePoint::new(hyperpoint.0[0] / denom, hyperpoint.0[1] / denom)
+        PoincarePoint::new(hyperpoint.0[0] / denom, hyperpoint.0[1] / denom)
     }
 }
 
-impl PoncairePoint {
-    pub fn new(x: f64, y: f64) -> PoncairePoint {
-        PoncairePoint {
+impl PoincarePoint {
+    pub fn new(x: f64, y: f64) -> PoincarePoint {
+        PoincarePoint {
             0: Point2::<f64>::new(x, y),
         }
     }
 }
 
-impl point::Point for PoncairePoint {
+impl point::Point for PoincarePoint {
     /// Return the Minkowski inner product of the two vectors provided, where the
     /// last co-ordinate is interpreted as being time-like.
-    fn minkowski_dot(a: &PoncairePoint, b: &PoncairePoint) -> f64 {
+    fn minkowski_dot(a: &PoincarePoint, b: &PoincarePoint) -> f64 {
         a.0[0] * b.0[0] - a.0[1] * b.0[1]
     }
 
-    /// Distance to origin in the Poncaire metric.
+    /// Distance to origin in the Poincare metric.
     fn distance_to_origin(&self) -> f64 {
-        self.distance_to(&PoncairePoint::new_at_origin())
+        self.distance_to(&PoincarePoint::new_at_origin())
     }
 
     /*fn distance_to_origin(&self) -> f64 {
@@ -51,10 +51,10 @@ impl point::Point for PoncairePoint {
 
     /// New point at 0, 0.
     fn new_at_origin() -> Self {
-        PoncairePoint::new(0., 0.)
+        PoincarePoint::new(0., 0.)
     }
 
-    /// Distance to another point in the Poncaire metric.
+    /// Distance to another point in the Poincare metric.
     fn distance_to(&self, to: &Self) -> f64 {
         let (x1, y1): (f64, f64) = (self.0[0], self.0[1]);
         let (x2, y2): (f64, f64) = (to.0[0], to.0[1]);
@@ -73,15 +73,15 @@ impl point::Point for PoncairePoint {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct PoncaireWall {
-    pub beginning: PoncairePoint,
-    pub end: PoncairePoint,
+pub struct PoincareWall {
+    pub beginning: PoincarePoint,
+    pub end: PoincarePoint,
     pub color: RGBColor,
 }
 
-impl From<HyperWall> for PoncaireWall {
-    fn from(hyperwall: HyperWall) -> PoncaireWall {
-        PoncaireWall {
+impl From<HyperWall> for PoincareWall {
+    fn from(hyperwall: HyperWall) -> PoincareWall {
+        PoincareWall {
             beginning: hyperwall.beginning.into(),
             end: hyperwall.end.into(),
             color: hyperwall.color,
@@ -89,7 +89,7 @@ impl From<HyperWall> for PoncaireWall {
     }
 }
 
-impl PoncaireWall {
+impl PoincareWall {
     /// Constructs a geodesic between wall ends in the Poncarie disk model.
     /// Returns: a triplet (x_center, y_center, radius)
     fn find_circle_through_points(&self) -> (f64, f64, f64) {
@@ -135,7 +135,7 @@ impl PoncaireWall {
 
     /// Checks whether p is located within the arc inscribed by endpoints of
     /// the wall on the geodesic circle.
-    fn is_point_on_wall(&self, p: PoncairePoint, x0: f64, y0: f64) -> bool {
+    fn is_point_on_wall(&self, p: PoincarePoint, x0: f64, y0: f64) -> bool {
         let (x1, y1): (f64, f64) = (self.beginning.0[0], self.beginning.0[1]);
         let (x2, y2): (f64, f64) = (self.end.0[0], self.end.0[1]);
         let (xp, yp): (f64, f64) = (p.0[0], p.0[1]);
@@ -156,7 +156,7 @@ impl PoncaireWall {
     }
 
     /// Finds distance from origin to the closest intersection point, if that point lies on the wall.
-    /// Uses Poncaire metric implemented on Point struct.
+    /// Uses Poincare metric implemented on Point struct.
     pub fn find_distance_of_intersection_with_ray(&self, angle: f64) -> Option<f64> {
         let (a, b, r) = self.find_circle_through_points();
         let m = angle; //.tan();
@@ -175,8 +175,8 @@ impl PoncaireWall {
         let y1 = (a * m + b * m2 + m * deltasqrt) / (1. + m2);
         let y2 = (a * m + b * m2 - m * deltasqrt) / (1. + m2);
 
-        let p1 = PoncairePoint::new(x1, y1);
-        let p2 = PoncairePoint::new(x2, y2);
+        let p1 = PoincarePoint::new(x1, y1);
+        let p2 = PoincarePoint::new(x2, y2);
 
         let d1 = p1.distance_to_origin();
         let d2 = p2.distance_to_origin();

@@ -1,9 +1,9 @@
 use crate::utils::color::RGBColor;
 use crate::window::canvas::Canvas;
-use crate::{game::Game, utils::poncairepoint::PoncaireWall};
+use crate::{game::Game, utils::poincarepoint::PoincareWall};
 use line_drawing::Bresenham;
 
-/// Draws a top-down view on a Poncaire disk.
+/// Draws a top-down view on a Poincare disk.
 pub struct Renderer {
     /// The state of the virtual world to be rendered
     pub game: Game,
@@ -54,16 +54,16 @@ impl Renderer {
     pub fn render(&self, canvas: &mut Canvas) {
         self.game
             .map
-            .get_walls_as_poncaire()
+            .get_walls_as_poincare()
             .iter()
             .map(|w| w.clone().into())
-            .for_each(|wall: PoncaireWall| {
+            .for_each(|wall: PoincareWall| {
                 self.draw_wall(&wall, canvas);
             });
     }
 
-    /// Draws wall as a line on the Poncaire disk model.
-    fn draw_wall(&self, wall: &PoncaireWall, canvas: &mut Canvas) {
+    /// Draws wall as a line on the Poincare disk model.
+    fn draw_wall(&self, wall: &PoincareWall, canvas: &mut Canvas) {
         let start =
             self.translate_to_canvas_coords(wall.beginning.0[0], wall.beginning.0[1], canvas);
         let end = self.translate_to_canvas_coords(wall.end.0[0], wall.end.0[1], canvas);
