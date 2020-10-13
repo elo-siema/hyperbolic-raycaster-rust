@@ -1,7 +1,7 @@
 [package]
-name = "raycaster"
+name = "hyperbolic-raycaster"
 version = "0.1.0"
-authors = ["Friedrich Ruynat <friedrich@hydrixos.net>"]
+authors = ["Michał Flak <michal@mflak.eu>"]
 edition = "2018"
 
 [dependencies]
@@ -10,9 +10,6 @@ serde_json = "1.0"
 nalgebra = {version = "*", features = ["serde-serialize"]}
 line_drawing = "*"
 console_error_panic_hook = "0.1.6"
-web-sys = {version = "*", features = ["Window"]}
-wasm-bindgen = "*"
-lazy_static = "*"
 
 [dependencies.sdl2]
 version = "*"

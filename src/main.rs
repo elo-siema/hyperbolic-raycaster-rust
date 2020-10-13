@@ -74,7 +74,7 @@ fn main_loop() {
                 for keycode in window.event_source.pressed_keycodes() {
                     needs_refresh = true;
                     let movement_speed = 0.01;
-                    let rotation_speed = 0.05;
+                    let rotation_speed = 0.01;
 
                     match keycode {
                         // Arrow up/down: Move player forward/backwards
