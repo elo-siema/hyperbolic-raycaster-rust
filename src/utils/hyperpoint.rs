@@ -4,8 +4,8 @@ use super::color::RGBColor;
 use crate::utils::*;
 use cmp::Ordering;
 use nalgebra::*;
-use point::{Point, Wall};
 use poincarepoint::{PoincarePoint, PoincareWall};
+use point::{Point, Wall};
 use serde::Deserialize;
 
 /// Struct representing a point on the Minkowski
@@ -27,7 +27,6 @@ impl From<PoincarePoint> for Hyperpoint {
 }
 
 impl Hyperpoint {
-
     /// Constructs the point given all coordinates.
     /// Does not check whether the point lies on the hyperboloid.
     pub fn new_with_z(x: f64, y: f64, z: f64) -> Hyperpoint {

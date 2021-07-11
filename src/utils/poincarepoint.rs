@@ -9,7 +9,7 @@ use crate::utils::hyperpoint;
 
 use super::{color::RGBColor, point};
 
-/// Struct representing a point on the 
+/// Struct representing a point on the
 /// Poincare disk model.
 /// Wrapper for nalgebra's Point2.
 #[derive(Clone, Debug, Deserialize)]

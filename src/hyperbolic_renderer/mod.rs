@@ -77,7 +77,7 @@ impl Renderer {
 
         walls.iter().for_each(|wall| {
             match wall.find_distance_of_intersection_with_ray(angle) {
-				// Ray hit wall
+                // Ray hit wall
                 Some(distance) => {
                     // Fix the calculated distance to correct the fisheye effect
                     let projected_distance = distance * angle.cos();
@@ -87,16 +87,19 @@ impl Renderer {
                         - projected_distance / self.illumination_radius)
                         .max(self.minimum_light)
                         .min(1.0);
-                    let illuminated_color = wall.color.adjust_light_intensity(
-                        distance_light_intensity
-                    );
+                    let illuminated_color =
+                        wall.color.adjust_light_intensity(distance_light_intensity);
 
                     // Pass the result
                     match &closest_hit {
-						// Ignore case when found hit is farther than closest hit up to this point
-						Some(Hit::Wall { color: _, distance }) if projected_distance >= *distance => (),
-						
-						// Update closest hit if it's None, or if we found a closer hit
+                        // Ignore case when found hit is farther than closest hit up to this point
+                        Some(Hit::Wall { color: _, distance })
+                            if projected_distance >= *distance =>
+                        {
+                            ()
+                        }
+
+                        // Update closest hit if it's None, or if we found a closer hit
                         _ => {
                             closest_hit = Some(Hit::Wall {
                                 color: illuminated_color,
@@ -104,8 +107,8 @@ impl Renderer {
                             })
                         }
                     }
-				}
-				// Ray did not hit wall
+                }
+                // Ray did not hit wall
                 None => (),
             }
         });
@@ -118,8 +121,8 @@ impl Renderer {
             None => self.draw_wall(0.0, RGBColor::black(), canvas, column),
 
             Some(Hit::Wall { color, distance }) => {
-				// Determine the visual height of the wall on the screen (normalized to the screen's height)
-				// 0.1 found by experiment. Works well with the scale of things on the Poincare disk coordinates
+                // Determine the visual height of the wall on the screen (normalized to the screen's height)
+                // 0.1 found by experiment. Works well with the scale of things on the Poincare disk coordinates
                 let normalized_wall_height = 0.1 / distance; //todo:: Allow different wall heights
 
                 // Finally: Draw the wall for the current view position…

@@ -1,4 +1,4 @@
-use crate::utils::{ hyperpoint::HyperWall, poincarepoint::PoincareWall};
+use crate::utils::{hyperpoint::HyperWall, poincarepoint::PoincareWall};
 
 /// Represents the map in the Minkowski hyperboloid model.
 pub struct HyperMap {
@@ -42,8 +42,8 @@ impl HyperMap {
     /// Returns iterator of PoincareWall references.
     pub fn get_walls_as_poincare(&self) -> Vec<PoincareWall> {
         let wallsp: Vec<PoincareWall> = self.walls.iter().map(|hw| hw.clone().into()).collect(); //todo: don't clone
-        //not sorting, because we're iterating through them all anyway
-        //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
+                                                                                                 //not sorting, because we're iterating through them all anyway
+                                                                                                 //wallsp.sort_by(|a, b| a.distance_to_origin().partial_cmp(&b.distance_to_origin()).unwrap() );
         wallsp
     }
 

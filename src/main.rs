@@ -57,7 +57,7 @@ fn main_loop() {
 
                 // todo:: update initial run so it does not break Emscripten
                 // Right now it redraws every frame
-                let mut needs_refresh = *initial_run; 
+                let mut needs_refresh = *initial_run;
 
                 // Get pending UI events
                 match window.event_source.poll_next_event() {
@@ -108,9 +108,7 @@ fn main_loop() {
                         width,
                         height,
                     ) {
-                        Ok(tex) => {
-                            tex
-                        }
+                        Ok(tex) => tex,
                         Err(e) => {
                             println!("Error creating texture! {}", e.to_string());
                             panic!("Error creating texture!");
@@ -127,9 +125,7 @@ fn main_loop() {
                         })
                         .unwrap();
                     match window.view.canvas.copy(&texture, None, None) {
-                        Ok(tex) => {
-                            tex
-                        }
+                        Ok(tex) => tex,
                         Err(e) => {
                             println!("Error presenting texture! {}", e.to_string());
                             panic!("rror presenting texture!");

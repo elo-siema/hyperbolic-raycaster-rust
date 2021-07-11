@@ -39,6 +39,10 @@ Desktop: Chrome, Firefox
 **Native:**
 Linux, Windows
 
+## Tested toolchain versions
+- rustc 1.55.0-nightly (a1411de9d 2021-06-26)
+- emsdk 1.39.20
+
 ## How to Build
 To build the desktop or the browser version you need to install the Rust  compiler first:
 

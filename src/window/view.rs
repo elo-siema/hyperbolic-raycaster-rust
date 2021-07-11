@@ -2,7 +2,6 @@ extern crate sdl2;
 
 use sdl2::render::WindowCanvas;
 
-
 /// A screen tile that can be used for drawing. (E.g. the content tile of a window or a HTML canvas.)
 pub struct View {
     pub canvas: WindowCanvas,
